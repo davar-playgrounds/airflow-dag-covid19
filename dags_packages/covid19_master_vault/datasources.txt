@@ -1,0 +1,8 @@
+Big query open data sets
+https://console.cloud.google.com/bigquery?project=dev-env-244117&folder=&organizationId=&p=bigquery-public-data&d=covid19_ecdc&page=dataset
+
+Our world in data
+https://ourworldindata.org/coronavirus-source-data
+
+my-website
+http://covid19-datalake.epizy.com/
