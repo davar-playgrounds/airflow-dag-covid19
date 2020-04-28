@@ -3,6 +3,7 @@ import csv
 import requests
 import shutil
 import pickle
+import io
 
 import pandas as pd
 import boto3
@@ -74,6 +75,11 @@ class DataHandler():
                 self.id.upper(),
                 sep='\t'
             ))
+            dataframe.to_json('{}/EXT/RAW_{}_DATA.json'.format(
+                self.absdirname,
+                self.id.upper(),
+                orient='records'
+            ))
             pd.to_pickle(
                 dataframe,
                 '{}/EXT_PICKLE/RAW_{}_DATA.pkl'.format(self.absdirname, self.id))
@@ -81,17 +87,22 @@ class DataHandler():
         elif self.source_type == 'CSV':
             url = 'https://covid.ourworldindata.org/data/owid-covid-data.csv'
             try:
-                req = requests.get(url, verify=False, stream=True)
-                req.raw.decode_content = True
-                with open(
-                    '{}/EXT/RAW_{}_DATA.csv'.format(self.absdirname, self.id.upper()), 'wb'
-                ) as fb:
-                    shutil.copyfileobj(req.raw, fb)
-                with open(
-                    '{}/EXT_PICKLE/RAW_{}_DATA.pkl'.format(self.absdirname, self.id.upper()), 'wb'
-                ) as fb:
-                    pickle.dump(req.text, fb) #options are .text .json() semnada
-                print('Raw {} succesfully extracted!'.format(self.id))
+                #req = requests.get(url, verify=False, stream=True)
+                req = requests.get(url, verify=False, stream=True).content
+                dataframe = pd.read_csv(io.StringIO(req.decode('utf-8')))
+                dataframe.to_csv('{}/EXT/RAW_{}_DATA.csv'.format(
+                    self.absdirname,
+                    self.id.upper(),
+                    sep='\t'
+                ))
+                dataframe.to_json('{}/EXT/RAW_{}_DATA.json'.format(
+                    self.absdirname,
+                    self.id.upper(),
+                    orient='records'
+                ))
+                pd.to_pickle(
+                    dataframe,
+                    '{}/EXT_PICKLE/RAW_{}_DATA.pkl'.format(self.absdirname, self.id))
             except requests.exceptions.RequestException as e:
                 print('Failed to extract csv: exception {}'.format(e))
 
@@ -136,18 +147,13 @@ class DataHandler():
         )
         del df_ren
         df_agg = df_agg.reset_index(level=[0])#reset date as index
-        print(df_agg.index)
         df_agg.to_csv('{}/TRA/{}_DATA_agg.csv'.format(
             self.absdirname,
             self.id.upper(),
             sep='\t'
         ))
-        print('df_agg')
-        print(df_agg.head())
         df_tra = pd.merge(df_agg, df_latlong, how='left', right_on='country', left_on='country')
         del df_agg
-        print('df_tra')
-        print(df_tra.head())
         df_tra.to_csv('{}/TRA/{}_DATA.csv'.format(
             self.absdirname,
             self.id.upper(),
@@ -180,7 +186,10 @@ class DataHandler():
                     self.id,
                     str(file_extension).lower()
                 )
-                file_name = '{}/TRA/{}_DATA.{}'.format(self.absdirname, self.id, file_extension.lower())
+                if 'RAW' == data_state:
+                    file_name = '{}/EXT/RAW_{}_DATA.{}'.format(self.absdirname, self.id, file_extension.lower())
+                if 'TRANSFORMED' == data_state:
+                    file_name = '{}/TRA/{}_DATA.{}'.format(self.absdirname, self.id, file_extension.lower())
                 s3.meta.client.upload_file(
                     file_name,
                     bucket_name,
