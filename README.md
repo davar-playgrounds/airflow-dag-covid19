@@ -1,5 +1,5 @@
 # airflow-dag-covid19
-Basic data pipeline to handle covid19 data sources uploading raw and transformed data to S3 with Airflow and Python
+Basic data pipeline to handle covid19 data sources utilizing python and airlflow.
 
 ! Setup
 
