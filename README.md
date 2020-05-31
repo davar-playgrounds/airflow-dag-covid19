@@ -31,3 +31,19 @@ Commonly summarizes the data, adds business rules and dimensions information to 
 ### Load layer:
 
 Deliveries data to an application, reporting area, … It’s the final step where the data has to be ready for consumption.
+
+## Credentials
+
+To achieve our goal, we’ll need credentials to make possible for python to handle data extraction from Google Big Query (GBQ) and later on our data flow we’ll have to write data on S3, so an AWS
+
+### Google Big Query
+
+Googe has a very comprehensive documentation on how get this going (https://cloud.google.com/bigquery/docs/bigquery-storage-python-pandas).
+
+For our project the objective is to download the credential.json and store it on a folder for adding it to a Variable on Airflow (explained on **Setup Airflow**).
+
+### AWS S3
+
+To utilize S3, a credential is needed as well. The module utilized on python is boto3, and “Real Python” has a great tutorial how to setup this credential, cheers to these guys !! (https://realpython.com/python-boto3-aws-s3/).
+
+There’s a python file on the project (credentials.py) that deals with these resources whenever we need them.
