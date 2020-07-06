@@ -9,4 +9,8 @@ Basic data pipeline to handle covid19 data sources utilizing Python and Airlflow
 
 3 pip install -r requirements.txt
 
-[Projectt's overview on my blog](https://tuliocg.github.io/projects/tutorials/python/airflow/etl/covid19-airflow-pipeline/)
+# Overview
+
+For more informations about this project, please check this post on my blog:
+
+[Blog post](https://tuliocg.github.io/projects/tutorials/python/airflow/etl/covid19-airflow-pipeline/)
